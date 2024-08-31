@@ -70,12 +70,10 @@ class BPQConnectionHandler:
         data = await self._get_oneshot_data()
         if b"Connected to TelnetServer" in data:
             self.is_connected = True
-            print("Connected")
 
         self._writer.write(b"\\\\\\\\8000000000000003 1 1 0 1 0 0 1\r")
         while True:
             data = await self._get_oneshot_data()
-            print(data)
             if self.on_message:
                 message = self.parse_message(data)
                 self.on_message(message)
@@ -84,7 +82,6 @@ class BPQConnectionHandler:
         header, message = data[0:2], data[2:]
         message_type = MessageType(header[1])
         content = message.decode(errors="ignore").strip()
-        print(content)
         bpq_message = BPQMessage(message_type, content, 0)
 
         if bpq_message.message_type == MessageType.BPQ:
@@ -93,8 +90,7 @@ class BPQConnectionHandler:
                 print(port)
                 port_number, port_description = port.split(" ", 1)
                 self.port_info[int(port_number)] = port_description
-
-        if bpq_message.message_type == MessageType.ACTIVITY:
+        elif bpq_message.message_type == MessageType.ACTIVITY:
             bpq_message.message = bpq_message.message[1:]
             port = int(bpq_message.message.split("Port=")[1].split(" ")[0])
             bpq_message.port = port

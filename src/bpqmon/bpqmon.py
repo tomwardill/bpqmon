@@ -4,7 +4,7 @@ import click
 from textual.app import App, ComposeResult
 from textual.widgets import Static, RichLog
 
-from .connection_handler import BPQConnectionHandler, BPQMessage
+from .connection_handler import BPQConnectionHandler, BPQMessage, MessageType
 
 
 class BPQMonApp(App):
@@ -20,10 +20,9 @@ class BPQMonApp(App):
 
     def compose(self) -> ComposeResult:
         yield Static("Connecting...", id="footer")
-        yield RichLog(highlight=False, markup=False, id="log")
+        yield RichLog(markup=True, id="log")
 
     async def on_mount(self) -> None:
-        self.screen.styles.background = "darkblue"
         self.connection_handler = BPQConnectionHandler(
             self.host,
             self.port,
@@ -43,7 +42,10 @@ class BPQMonApp(App):
     def on_recieve_data(self, message: BPQMessage):
         self.log(message.message)
         log_view = self.query_one("#log")
-        log_view.write(message.message)
+        if message.message_type == MessageType.BPQ:
+            log_view.write(f"[bold]{message.message}")
+        else:
+            log_view.write(message.message)
 
 
 @click.command()
