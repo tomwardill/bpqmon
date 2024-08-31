@@ -87,7 +87,6 @@ class BPQConnectionHandler:
         if bpq_message.message_type == MessageType.BPQ:
             port_info = bpq_message.message.split("|")[1:-1]
             for port in port_info:
-                print(port)
                 port_number, port_description = port.split(" ", 1)
                 self.port_info[int(port_number)] = port_description
         elif bpq_message.message_type == MessageType.ACTIVITY:

@@ -7,6 +7,16 @@ from textual.widgets import Static, RichLog
 from .connection_handler import BPQConnectionHandler, BPQMessage, MessageType
 
 
+PORT_COLOURS = [
+    "red",
+    "green",
+    "blue",
+    "yellow",
+    "magenta",
+    "cyan",
+]
+
+
 class BPQMonApp(App):
     CSS_PATH = "layout.tcss"
     connection_handler = None
@@ -45,7 +55,7 @@ class BPQMonApp(App):
         if message.message_type == MessageType.BPQ:
             log_view.write(f"[bold]{message.message}")
         else:
-            log_view.write(message.message)
+            log_view.write(f"[{PORT_COLOURS[message.port]}]{message.message}")
 
 
 @click.command()
