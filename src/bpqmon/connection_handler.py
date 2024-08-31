@@ -5,7 +5,7 @@ from enum import Enum
 
 class MessageType(Enum):
     BPQ = 255
-    ACTIVITY = b"\x1b"
+    ACTIVITY = 27
 
 
 @dataclass
@@ -83,7 +83,9 @@ class BPQConnectionHandler:
     def parse_message(self, data):
         header, message = data[0:2], data[2:]
         message_type = MessageType(header[1])
-        bpq_message = BPQMessage(message_type, message.decode(), 0)
+        content = message.decode(errors="ignore").strip()
+        print(content)
+        bpq_message = BPQMessage(message_type, content, 0)
 
         if bpq_message.message_type == MessageType.BPQ:
             port_info = bpq_message.message.split("|")[1:-1]
@@ -91,5 +93,10 @@ class BPQConnectionHandler:
                 print(port)
                 port_number, port_description = port.split(" ", 1)
                 self.port_info[int(port_number)] = port_description
+
+        if bpq_message.message_type == MessageType.ACTIVITY:
+            bpq_message.message = bpq_message.message[1:]
+            port = int(bpq_message.message.split("Port=")[1].split(" ")[0])
+            bpq_message.port = port
 
         return bpq_message

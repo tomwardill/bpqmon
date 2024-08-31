@@ -28,3 +28,15 @@ def test_parsing_management_message():
         2: "HF Packet BPSK300",
         9: "Telnet",
     }
+
+
+def test_parsing_activity_message():
+    bpq_connection_handler = BPQConnectionHandler(
+        hostname=None, port=None, username=None, password=None
+    )
+    bpq_message = bpq_connection_handler.parse_message(
+        b"\xff\x1b[11:02:28T 2E0JJI>GB7IOW Port=2 <C C P>\r\xfe"
+    )
+    assert bpq_message.message_type == MessageType.ACTIVITY
+    assert bpq_message.message == "11:02:28T 2E0JJI>GB7IOW Port=2 <C C P>"
+    assert bpq_message.port == 2
