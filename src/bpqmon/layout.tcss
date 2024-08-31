@@ -1,8 +1,45 @@
 #footer {
     dock: bottom;
     width: 100%;
-    height: 1;
+    height: 3;
     color: #0f2b41;
     background: dodgerblue;
 }
 
+.box {
+    height: 100%;
+    width: 1fr;
+    border: solid white;
+}
+
+.port_1 {
+    color: red
+}
+
+.port_2 {
+    color: green
+}
+
+.port_3 {
+    color: darkblue
+}
+
+.port_4 {
+    color: yellow
+}
+
+.port_5 {
+    color: magenta
+}
+
+.port_6 {
+    color: cyan
+}
+
+.port_0 {
+    color: white
+}
+
+.port_9 {
+    color: white
+}

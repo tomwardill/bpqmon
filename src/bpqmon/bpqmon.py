@@ -2,6 +2,7 @@ import asyncio
 
 import click
 from textual.app import App, ComposeResult
+from textual.containers import Horizontal, Vertical
 from textual.widgets import Static, RichLog
 
 from .connection_handler import BPQConnectionHandler, BPQMessage, MessageType
@@ -10,7 +11,7 @@ from .connection_handler import BPQConnectionHandler, BPQMessage, MessageType
 PORT_COLOURS = [
     "red",
     "green",
-    "blue",
+    "darkblue",
     "yellow",
     "magenta",
     "cyan",
@@ -29,8 +30,11 @@ class BPQMonApp(App):
         super().__init__()
 
     def compose(self) -> ComposeResult:
-        yield Static("Connecting...", id="footer")
-        yield RichLog(markup=True, id="log")
+        with Vertical():
+            yield RichLog(markup=True, id="log")
+            with Horizontal(id="footer"):
+                yield Static("Connecting...", id="connectionLabel", classes="box")
+                yield Static("No port info", classes="box")
 
     async def on_mount(self) -> None:
         self.connection_handler = BPQConnectionHandler(
@@ -44,16 +48,28 @@ class BPQMonApp(App):
         self.reader_task = asyncio.create_task(self.connection_handler.connect())
         await asyncio.sleep(0)
 
-    def on_monitor_connection_status(self, value):
+    async def on_monitor_connection_status(self, value):
         self.log("Connection status changed")
         footer = self.query_one("#footer")
-        footer.update("Connected" if value else "Disconnected")
+        footer.remove_children()
+        if not value:
+            await footer.mount(Static("Disconnected", classes="box"))
 
-    def on_recieve_data(self, message: BPQMessage):
+    async def on_recieve_data(self, message: BPQMessage):
         self.log(message.message)
         log_view = self.query_one("#log")
         if message.message_type == MessageType.BPQ:
             log_view.write(f"[bold]{message.message}")
+
+            # Update footer with port info
+            footer = self.query_one("#footer")
+            print(self.connection_handler.port_info)
+            for port, port_name in self.connection_handler.port_info.items():
+                print(port, port_name)
+                await footer.mount(
+                    Static(f"{port}: {port_name}", classes=f"box port_{port}")
+                )
+
         else:
             log_view.write(f"[{PORT_COLOURS[message.port]}]{message.message}")
 

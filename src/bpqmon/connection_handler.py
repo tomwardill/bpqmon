@@ -16,23 +16,12 @@ class BPQMessage:
 
 
 class BPQConnectionHandler:
-    _is_connected = False
+    is_connected = True
     _idle_task = None
     _reader = None
     _writer = None
 
     port_info = {}
-
-    @property
-    def is_connected(self):
-        return self._is_connected
-
-    @is_connected.setter
-    def is_connected(self, value):
-        print("Setting is_connected")
-        self._is_connected = value
-        if self.on_connection_status:
-            self.on_connection_status(value)
 
     def __init__(
         self,
@@ -71,6 +60,7 @@ class BPQConnectionHandler:
         data = await self._get_oneshot_data()
         if b"Connected to TelnetServer" in data:
             self.is_connected = True
+            await self.on_connection_status(True)
             self._idle_task = asyncio.create_task(self.idle_loop())
 
         self._writer.write(b"\\\\\\\\8000000000000003 1 1 0 1 0 0 1\r")
@@ -78,7 +68,7 @@ class BPQConnectionHandler:
             data = await self._get_oneshot_data()
             if self.on_message:
                 message = self.parse_message(data)
-                self.on_message(message)
+                await self.on_message(message)
 
     async def idle_loop(self):
         while True:
