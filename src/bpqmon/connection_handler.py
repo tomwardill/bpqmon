@@ -16,7 +16,6 @@ class BPQMessage:
 
 
 class BPQConnectionHandler:
-
     _is_connected = False
     _reader = None
     _writer = None

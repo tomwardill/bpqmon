@@ -34,4 +34,5 @@ pytest = "^8.3.2"
 black = "^24.8.0"
 textual-dev = "^1.6.1"
 ruff = "^0.6.3"
+coverage = "^7.6.1"
 

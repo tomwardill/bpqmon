@@ -8,7 +8,6 @@ from .connection_handler import BPQConnectionHandler, BPQMessage
 
 
 class BPQMonApp(App):
-
     CSS_PATH = "layout.tcss"
     connection_handler = None
 
