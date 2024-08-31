@@ -1,0 +1,8 @@
+#footer {
+    dock: bottom;
+    width: 100%;
+    height: 1;
+    color: #0f2b41;
+    background: dodgerblue;
+}
+

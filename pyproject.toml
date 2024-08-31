@@ -1,0 +1,37 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "bpqmon"
+version = "0.0.1"
+authors = [
+  "Tom Wardill <tom@howrandom.net>"
+]
+description = "A utility for outputing BPQ monitoring details"
+readme = "README.md"
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.poetry.urls]
+Homepage = "https://github.com/tomwardill/bpqmon"
+Issues = "https://github.com/tomwardill/bpqmon/issues"
+
+[tool.poetry.scripts]
+bpqmon = "bpqmon.bpqmon:run"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4.0.0"
+click = "^8.1.7"
+textual = "^0.79.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+black = "^24.8.0"
+textual-dev = "^1.6.1"
+ruff = "^0.6.3"
+
