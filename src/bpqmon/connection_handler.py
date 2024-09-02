@@ -71,7 +71,6 @@ class BPQConnectionHandler:
         self._writer.write(b"\\\\\\\\8000000000000003 1 1 0 1 0 0 1\r")
         while True:
             data = await self._get_oneshot_data()
-            print(data)
             message = self.parse_message(data)
             await asyncio.gather(
                 *[handler(message) for handler in self.message_handlers]

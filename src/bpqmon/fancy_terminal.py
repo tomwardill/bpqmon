@@ -6,6 +6,7 @@ from .connection_handler import BPQConnectionHandler, BPQMessage, MessageType
 
 
 PORT_COLOURS = [
+    "white",
     "red",
     "green",
     "darkblue",
@@ -51,9 +52,7 @@ class BPQMonApp(App):
 
             # Update footer with port info
             footer = self.query_one("#footer")
-            print(self.connection_handler.port_info)
             for port, port_name in self.connection_handler.port_info.items():
-                print(port, port_name)
                 await footer.mount(
                     Static(f"{port}: {port_name}", classes=f"box port_{port}")
                 )
