@@ -5,6 +5,7 @@ import click
 
 from .connection_handler import BPQConnectionHandler
 from .fancy_terminal import BPQMonApp
+from .plain_terminal import PlainTerminal
 
 
 # coroutine that will start another coroutine after a delay in seconds
@@ -49,7 +50,8 @@ async def start_listeners(
 
         await run_app()
     elif plain_terminal:
-        raise NotImplementedError("Plain terminal mode not implemented yet")
+        terminal = PlainTerminal(connection_handler)
+        await terminal.run()
     else:
         raise NotImplementedError("Other modes not implemented yet")
 

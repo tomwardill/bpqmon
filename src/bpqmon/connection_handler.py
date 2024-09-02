@@ -71,6 +71,7 @@ class BPQConnectionHandler:
         self._writer.write(b"\\\\\\\\8000000000000003 1 1 0 1 0 0 1\r")
         while True:
             data = await self._get_oneshot_data()
+            print(data)
             message = self.parse_message(data)
             await asyncio.gather(
                 *[handler(message) for handler in self.message_handlers]
@@ -95,6 +96,10 @@ class BPQConnectionHandler:
                 self.port_info[int(port_number)] = port_description
         elif bpq_message.message_type == MessageType.ACTIVITY:
             bpq_message.message = bpq_message.message[1:]
+
+            if "Port=" not in bpq_message.message:
+                return bpq_message
+
             port = int(bpq_message.message.split("Port=")[1].split(" ")[0])
             bpq_message.port = port
 
