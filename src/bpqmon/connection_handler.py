@@ -21,6 +21,9 @@ class BPQConnectionHandler:
     _reader = None
     _writer = None
 
+    connection_status_handlers = []
+    message_handlers = []
+
     port_info = {}
 
     def __init__(
@@ -29,16 +32,17 @@ class BPQConnectionHandler:
         port,
         username,
         password,
-        on_connection_status=None,
-        on_message=None,
     ):
         self.hostname = hostname
         self.port = port
         self.username = username
         self.password = password
 
-        self.on_connection_status = on_connection_status
-        self.on_message = on_message
+    async def add_connection_status_handler(self, handler):
+        self.connection_status_handlers.append(handler)
+
+    async def add_message_handler(self, handler):
+        self.message_handlers.append(handler)
 
     async def _get_oneshot_data(self):
         while True:
@@ -54,21 +58,23 @@ class BPQConnectionHandler:
         )
 
         connection_string = f"{self.username}\r{self.password}\rBPQTERMTCP\r\n"
-        print(connection_string.encode())
         self._writer.write(connection_string.encode())
 
         data = await self._get_oneshot_data()
         if b"Connected to TelnetServer" in data:
             self.is_connected = True
-            await self.on_connection_status(True)
+            await asyncio.gather(
+                *[handler(True) for handler in self.connection_status_handlers]
+            )
             self._idle_task = asyncio.create_task(self.idle_loop())
 
         self._writer.write(b"\\\\\\\\8000000000000003 1 1 0 1 0 0 1\r")
         while True:
             data = await self._get_oneshot_data()
-            if self.on_message:
-                message = self.parse_message(data)
-                await self.on_message(message)
+            message = self.parse_message(data)
+            await asyncio.gather(
+                *[handler(message) for handler in self.message_handlers]
+            )
 
     async def idle_loop(self):
         while True:
