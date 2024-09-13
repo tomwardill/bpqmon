@@ -6,6 +6,7 @@ import click
 from .connection_handler import BPQConnectionHandler
 from .fancy_terminal import BPQMonApp
 from .plain_terminal import PlainTerminal
+from .mqtt import MQTTOutput
 
 
 # coroutine that will start another coroutine after a delay in seconds
@@ -17,7 +18,7 @@ async def delay(coro, seconds):
 
 
 async def start_listeners(
-    fancy_terminal, plain_terminal, host, port, username, password
+    fancy_terminal, plain_terminal, host, port, username, password, mqtt_details: dict
 ):
     if plain_terminal and fancy_terminal:
         raise ValueError("Cannot run in both plain and fancy terminal mode")
@@ -27,6 +28,8 @@ async def start_listeners(
     )
     asyncio.create_task(delay(connection_handler.connect, 5))
     await asyncio.sleep(1)
+
+    outputs = []
 
     if fancy_terminal:
         app = BPQMonApp(connection_handler=connection_handler)
@@ -48,12 +51,18 @@ async def start_listeners(
                 app._loop = None
                 app._thread_id = 0
 
-        await run_app()
+        outputs.append(run_app)
     elif plain_terminal:
         terminal = PlainTerminal(connection_handler)
-        await terminal.run()
-    else:
+        outputs.append(terminal.run)
+    if mqtt_details["enabled"]:
+        del mqtt_details["enabled"]
+        mqtt = MQTTOutput(connection_handler, **mqtt_details)
+        outputs.append(mqtt.run)
+    if not outputs:
         raise NotImplementedError("Other modes not implemented yet")
+
+    await asyncio.gather(*[output() for output in outputs])
 
 
 @click.command()
@@ -65,12 +74,39 @@ async def start_listeners(
 )
 @click.option("--host", default="localhost", help="Host to connect to")
 @click.option("--port", default=8011, help="Port to connect to")
+@click.option("--mqtt", is_flag=True, default=False, help="Enable MQTT output")
+@click.option("--mqtt-hostname", default="localhost", help="MQTT host to connect to")
+@click.option("--mqtt-port", default=1883, help="MQTT port to connect to")
+@click.option("--mqtt-username", default="", help="MQTT username")
+@click.option("--mqtt-password", default="", help="MQTT password")
 @click.argument("username")
 @click.argument("password")
-def run(fancy_terminal, plain_terminal, host, port, username, password):
+def run(
+    fancy_terminal,
+    plain_terminal,
+    host,
+    port,
+    mqtt,
+    mqtt_hostname,
+    mqtt_port,
+    mqtt_username,
+    mqtt_password,
+    username,
+    password,
+):
+    mqtt_details = {
+        "enabled": mqtt,
+        "hostname": mqtt_hostname,
+        "port": mqtt_port,
+        "username": mqtt_username,
+        "password": mqtt_password,
+    }
+
     # Get into asyncio world
     asyncio.run(
-        start_listeners(fancy_terminal, plain_terminal, host, port, username, password)
+        start_listeners(
+            fancy_terminal, plain_terminal, host, port, username, password, mqtt_details
+        )
     )
 
 

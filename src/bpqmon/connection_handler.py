@@ -52,7 +52,6 @@ class BPQConnectionHandler:
             return data
 
     async def connect(self):
-        print("Connecting")
         self._reader, self._writer = await asyncio.open_connection(
             self.hostname, self.port
         )

@@ -8,7 +8,7 @@ from .connection_handler import BPQConnectionHandler, MessageType
 class PlainTerminal:
     def __init__(self, connection_handler: BPQConnectionHandler):
         self.connection_handler = connection_handler
-        self.logger = structlog.get_logger()
+        self.logger = structlog.get_logger().bind(output="plain_terminal")
 
     async def run(self):
         await self.connection_handler.add_connection_status_handler(
