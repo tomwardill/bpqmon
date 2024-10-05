@@ -83,7 +83,14 @@ class BPQConnectionHandler:
 
     def parse_message(self, data):
         header, message = data[0:2], data[2:]
-        message_type = MessageType(header[1])
+        try:
+            message_type = MessageType(header[1])
+        except ValueError as e:
+            print(e)
+            print(data)
+            import sys
+
+            sys.exit(1)
         content = message.decode(errors="ignore").strip()
         bpq_message = BPQMessage(message_type, content, 0)
 
