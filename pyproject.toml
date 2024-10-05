@@ -30,6 +30,7 @@ click = "^8.1.7"
 textual = "^0.79.0"
 structlog = "^24.4.0"
 paho-mqtt = "^2.1.0"
+rich = "^13.9.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"
