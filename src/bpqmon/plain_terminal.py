@@ -30,4 +30,4 @@ class PlainTerminal:
             for port, port_name in self.connection_handler.port_info.items():
                 self.logger.info(f"{port}: {port_name}")
         else:
-            self.logger.info(message.message)
+            self.logger.info(message.message.replace("\r", "\n"))
