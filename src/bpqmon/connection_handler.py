@@ -7,6 +7,10 @@ class MessageType(Enum):
     BPQ = 255
     ACTIVITY = 27
 
+    @classmethod
+    def _missing_(cls, value):
+        return cls.ACTIVITY
+
 
 @dataclass
 class BPQMessage:
