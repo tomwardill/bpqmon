@@ -8,7 +8,7 @@ version = "0.0.1"
 authors = [
   {name = "Tom Wardill", email = "tom@howrandom.net"}
 ]
-description = "A utility for outputing BPQ monitoring details"
+description = "A utility for outputting BPQ monitoring details"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.11"
