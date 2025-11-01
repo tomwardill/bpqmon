@@ -17,18 +17,18 @@ A simple CLI application that can connect to a linbpq instance using the telnet 
 
 This project is not currently published to PyPi, you have to use the checkout for now.
 
-It uses [poetry](https://python-poetry.org/docs/#installation) for dependency management
+It uses [uv](https://docs.astral.sh/uv/) for dependency management
 
 ```
-poetry install
+uv sync
 ```
 
 ## Running
 
-Run the application using poetry and pass some command line options
+Run the application using uv and pass some command line options
 
 ```
-poetry run bpqmon --host localhost --port 8011 --username <bpq login name> --password <bpq login password>
+uv run bpqmon --host localhost --port 8011 --username <bpq login name> --password <bpq login password>
 ```
 
 This should open a CLI application, connect to the linbpq instance, and start outputting monitoring
